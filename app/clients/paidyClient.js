@@ -11,7 +11,7 @@ const config = require('../config');
  * Creates a payment against a browser-issued token. The PSP returns 202 immediately and
  * authorises asynchronously, notifying us later via webhook.
  *
- * @param {{token: string, amount: number, idempotencyKey: string}} params
+ * @param {{token: string, amount: number, idempotencyKey: string}} params amount is in cents (the minor unit)
  * @returns the PSP payment { paymentId, merchantId, amount, status, ... }
  */
 const createPayment = async ({token, amount, idempotencyKey}) => {
@@ -37,7 +37,7 @@ const createPayment = async ({token, amount, idempotencyKey}) => {
  * Captures an authorised payment (full, or partial when `amount` is given).
  *
  * @param {string} paymentId
- * @param {number|null} amount optional partial amount
+ * @param {number|null} amount optional partial amount in cents
  * @returns the updated PSP payment
  */
 const capturePayment = async (paymentId, amount = null) => {

@@ -24,7 +24,7 @@ const buildOrder = (payment) => ({
  * Creates a payment at the PSP for a browser-issued token and records the pending order.
  * The PSP authorises asynchronously; the final status arrives later via webhook.
  *
- * @param {{token: string, amount: number}} params
+ * @param {{token: string, amount: number}} params amount is in cents (the minor unit)
  * @returns the recorded order
  */
 const createOrder = async ({token, amount}) => {
