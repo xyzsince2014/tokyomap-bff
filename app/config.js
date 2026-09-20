@@ -64,6 +64,16 @@ const client = {
   "privateKeyPath" : `${process.env.CLIENT_PRIVATE_KEY_PATH}`,
 };
 
+/* sudo-paidy (PSP) */
+const paidy = {
+  baseUrl: process.env.PAIDY_DOMAIN, // e.g. http://localhost:8082
+  paymentsEndpoint: `${process.env.PAIDY_DOMAIN}/api/v1/payments`,
+  jsUrl: `${process.env.PAIDY_DOMAIN}/paidy.js`, // the browser SDK, handed to the FE
+  publishableKey: process.env.PAIDY_PUBLISHABLE_KEY, // pk_ — safe to expose to the browser
+  secretKey: process.env.PAIDY_SECRET_KEY, // sk_ — server only, never sent to the browser
+  webhookSigningSecret: process.env.PAIDY_WEBHOOK_SIGNING_SECRET, // HMAC key to verify inbound webhooks
+};
+
 /* Cognito */
 const cognito = {
   authorisation: `${process.env.COGNITO_DOMAIN}/oauth2/authorize`,
@@ -83,5 +93,6 @@ module.exports = {
   rs,
   rp,
   client,
-  cognito
+  cognito,
+  paidy
 };

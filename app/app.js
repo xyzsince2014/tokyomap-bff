@@ -15,10 +15,14 @@ redisClient.on('error', (err) => console.error('[Redis Error] ', err));
 
 const app = express();
 
+// parse JSON everywhere EXCEPT inbound webhooks, whose routes need the raw body to verify the
+// HMAC signature against the exact bytes the sender signed.
+const jsonParser = express.json();
+
 app
   .use(cookieParser())
   .use(express.urlencoded({extended: true}))
-  .use(express.json())
+  .use((req, res, next) => (req.path.startsWith('/webhooks/') ? next() : jsonParser(req, res, next)))
   .use(
     session({
       key: process.env.SESSION_KEY,
