@@ -16,6 +16,7 @@ const execute = io => {
         const tweets = await enrichTweets(rawTweets);
         socket.emit('initSocketState:resolve', tweets);
       } catch (e) {
+        console.error('[socket] initSocketState failed:', e);
         socket.emit('initSocketState:reject', e);
       }
     });
@@ -27,6 +28,7 @@ const execute = io => {
         socket.emit('postTweet:resolve', tweets);
         socket.broadcast.emit('postTweet:resolve', tweets);
       } catch (e) {
+        console.error('[socket] postTweet failed:', e);
         socket.emit('postTweet:reject', e);
       }
     });
@@ -59,7 +61,8 @@ const enrichTweets = async (tweets) => {
     const profile = profiles[t.userId];
     return {
       ...t,
-      userName: profile.name ?? 'Unknown',
+      // a tweet's author may have no profile in the RS — guard against profile being undefined
+      userName: profile?.name ?? 'Unknown',
     };
   });
 
