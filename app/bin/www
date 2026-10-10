@@ -6,7 +6,7 @@
 const app = require('../app');
 const debug = require('debug')('app:server');
 const http = require('http');
-const socketio = require('socket.io');
+const {Server} = require('socket.io');
 
 const socketService = require("../services/socketService");
 
@@ -22,9 +22,9 @@ app.set('port', port);
 const server = http.createServer(app);
 
 /**
- * socket.io
+ * socket.io.
  */
-socketService.execute(socketio(server));
+socketService.execute(new Server(server, {cors: { origin: '*'}}));
 
 /**
  * Listen on provided port, on all network interfaces.
