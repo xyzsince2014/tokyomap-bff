@@ -64,7 +64,7 @@ const client = {
   "privateKeyPath" : `${process.env.CLIENT_PRIVATE_KEY_PATH}`,
 };
 
-/* sudo-paidy (PSP) */
+/* pseudo-paidy (PSP) */
 const paidy = {
   baseUrl: process.env.PAIDY_DOMAIN, // e.g. http://localhost:8082
   paymentsEndpoint: `${process.env.PAIDY_DOMAIN}/api/v1/payments`,

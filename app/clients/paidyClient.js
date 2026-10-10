@@ -3,7 +3,7 @@ const fetch = require("node-fetch");
 const config = require('../config');
 
 /**
- * Client for the sudo-paidy PSP. All calls here use the SECRET key and run server-to-server;
+ * Client for the pseudo-paidy PSP. All calls here use the SECRET key and run server-to-server;
  * the publishable key / tokenisation happen in the browser (paidy.js), never here.
  */
 
