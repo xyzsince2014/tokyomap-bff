@@ -1,35 +1,38 @@
 const usrLogic = require('../logics/usrLogic');
 const rsClient = require('../clients/rsClient');
+const {SOCKET_EVENTS} = require('./socketEvents');
 
 /**
- * Executes socket connection i/o.
+ * Wires up the socket server's event handlers.
  *
- * @param {*} io
+ * @param {import('socket.io').Server} io the socket.io server
  */
 const execute = io => {
-  io.origins('*:*');
-
+  // fires once per connected client; `socket` is that one client's connection
   io.on('connection', socket => {
-    socket.on('initSocketState', async () => {
+
+    // the client just connected and wants the current map state
+    socket.on(SOCKET_EVENTS.INIT, async () => {
       try {
-        const rawTweets = await usrLogic.getTweets();
-        const tweets = await enrichTweets(rawTweets);
-        socket.emit('initSocketState:resolve', tweets);
+        const rawTweets = await usrLogic.getTweets(); // fetch recent tweets from the DB
+        const tweets = await enrichTweets(rawTweets); // add each author's profile
+        socket.emit(SOCKET_EVENTS.INIT_RESOLVE, tweets); // reply to this client
       } catch (e) {
         console.error('[socket] initSocketState failed:', e);
-        socket.emit('initSocketState:reject', e);
+        socket.emit(SOCKET_EVENTS.INIT_REJECT, e); // tell this client it failed
       }
     });
 
-    socket.on('postTweet', async ({userId, geolocation, message}) => {
+    // the client posted a new tweet
+    socket.on(SOCKET_EVENTS.POST, async ({userId, geolocation, message}) => {
       try {
-        const rawTweets = await usrLogic.postTweet({sub: userId, geolocation, message});
+        const rawTweets = await usrLogic.postTweet({sub: userId, geolocation, message}); // persist, then re-read the list
         const tweets = await enrichTweets(rawTweets);
-        socket.emit('postTweet:resolve', tweets);
-        socket.broadcast.emit('postTweet:resolve', tweets);
+        socket.emit(SOCKET_EVENTS.POST_RESOLVE, tweets);           // update the poster
+        socket.broadcast.emit(SOCKET_EVENTS.POST_RESOLVE, tweets); // push the new list to every other connected client
       } catch (e) {
         console.error('[socket] postTweet failed:', e);
-        socket.emit('postTweet:reject', e);
+        socket.emit(SOCKET_EVENTS.POST_REJECT, e);
       }
     });
   });
